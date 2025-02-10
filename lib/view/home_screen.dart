@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todolist_getx/constant.dart';
+import 'package:todolist_getx/controllers/task_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -40,7 +41,7 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: MyColor.lightBluColor,
           elevation: 0,
           onPressed: () {
-          Get.toNamed("/newTask");
+            Get.toNamed("/newTask");
           },
           child: Icon(Icons.add),
         ),
@@ -80,13 +81,15 @@ class TopSectionWidget extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Text(
-            "1 Tasks",
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall!
-                .copyWith(color: Colors.white, fontSize: 16),
-          )
+          Obx(() {
+            return Text(
+              "${Get.find<TaskController>().tasks.length} Tasks",
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(color: Colors.white, fontSize: 16),
+            );
+          })
         ],
       ),
     );
@@ -106,40 +109,45 @@ class _BottomSectionWidgetState extends State<BottomSectionWidget> {
   bool isChecked = false;
   @override
   Widget build(BuildContext context) {
+    var controller = Get.find<TaskController>();
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        height: Get.height * .55,
-        width: Get.width,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24), topRight: Radius.circular(24))),
-        child: ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text("shahram"),
-                subtitle: Text("babaei"),
-                trailing: Checkbox(
-                    activeColor: MyColor.lightBluColor,
-                    value: isChecked,
-                    onChanged: (value) {
-                      isChecked = !isChecked;
-                      setState(() {});
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3)),
-                    side: BorderSide(color: Colors.black45, width: 1)),
-              );
+          height: Get.height * .55,
+          width: Get.width,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24), topRight: Radius.circular(24))),
+          child: Obx(
+            () {
+              return ListView.separated(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(controller.tasks[index].taskTitle.toString()),
+                      subtitle:
+                          Text(controller.tasks[index].subTitle.toString()),
+                      trailing: Checkbox(
+                          activeColor: MyColor.lightBluColor,
+                          value: controller.tasks[index].status,
+                          onChanged: (value) {
+                            isChecked = !isChecked;
+                            setState(() {});
+                          },
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(3)),
+                          side: BorderSide(color: Colors.black45, width: 1)),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider(
+                      height: .5,
+                    );
+                  },
+                  itemCount: controller.tasks.length);
             },
-            separatorBuilder: (context, index) {
-              return Divider(
-                height: .5,
-              );
-            },
-            itemCount: 10),
-      ),
+          )),
     );
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todolist_getx/constant.dart';
+import 'package:todolist_getx/controllers/newtask_controller.dart';
+import 'package:todolist_getx/controllers/task_controller.dart';
+import 'package:todolist_getx/models/task_model.dart';
 
 class NewTaskWidget extends StatelessWidget {
   const NewTaskWidget({super.key});
@@ -27,6 +30,7 @@ class NewTaskWidget extends StatelessWidget {
                 style: TextStyle(color: Colors.grey.shade400, fontSize: 16),
               ),
               TextField(
+                controller: Get.find<NewTaskController>().titleController,
                 maxLines: 10,
                 cursorColor: MyColor.lightBluColor,
                 decoration: InputDecoration(
@@ -39,6 +43,7 @@ class NewTaskWidget extends StatelessWidget {
                 height: 10,
               ),
               TextField(
+                controller: Get.find<NewTaskController>().subtitleController,
                 maxLength: 30,
                 decoration: InputDecoration(
                     border: InputBorder.none,
@@ -56,7 +61,20 @@ class NewTaskWidget extends StatelessWidget {
                           elevation: 0,
                           foregroundColor: Colors.white,
                           backgroundColor: MyColor.lightBluColor),
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.find<TaskController>().tasks.add(TaskModel(
+                            taskTitle: Get.find<NewTaskController>()
+                                .titleController
+                                .text,
+                            subTitle: Get.find<NewTaskController>()
+                                .subtitleController
+                                .text,
+                            status: true));
+                        Get.find<NewTaskController>().titleController.text = "";
+                        Get.find<NewTaskController>().subtitleController.text =
+                            "";
+                        Get.back();
+                      },
                       child: Text("Add")))
             ],
           ),
