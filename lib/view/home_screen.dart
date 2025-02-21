@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todolist_getx/constant.dart';
+import 'package:todolist_getx/controllers/newtask_controller.dart';
 import 'package:todolist_getx/controllers/task_controller.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -41,6 +42,7 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: MyColor.lightBluColor,
           elevation: 0,
           onPressed: () {
+            Get.find<TaskController>().isEditing = false;
             Get.toNamed("/newTask");
           },
           child: Icon(Icons.add),
@@ -96,20 +98,12 @@ class TopSectionWidget extends StatelessWidget {
   }
 }
 
-class BottomSectionWidget extends StatefulWidget {
-  const BottomSectionWidget({
-    super.key,
-  });
+class BottomSectionWidget extends StatelessWidget {
+  const BottomSectionWidget({super.key});
 
-  @override
-  State<BottomSectionWidget> createState() => _BottomSectionWidgetState();
-}
-
-class _BottomSectionWidgetState extends State<BottomSectionWidget> {
-  bool isChecked = false;
   @override
   Widget build(BuildContext context) {
-    var controller = Get.find<TaskController>();
+    //  var controller = Get.find<TaskController>();
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
@@ -124,16 +118,28 @@ class _BottomSectionWidgetState extends State<BottomSectionWidget> {
               return ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   itemBuilder: (context, index) {
+                    var task = Get.find<TaskController>().tasks[index];
                     return ListTile(
-                      title: Text(controller.tasks[index].taskTitle.toString()),
-                      subtitle:
-                          Text(controller.tasks[index].subTitle.toString()),
+                      onLongPress: () {
+                        Get.find<TaskController>().tasks.removeAt(index);
+                      },
+                      onTap: () {
+                        Get.find<TaskController>().index = index;
+                        Get.find<TaskController>().isEditing = true;
+                        Get.find<NewTaskController>().titleController.text =
+                            task.taskTitle!;
+                        Get.find<NewTaskController>().subtitleController.text =
+                            task.subTitle!;
+                        Get.toNamed("/newTask");
+                      },
+                      title: Text(task.taskTitle.toString()),
+                      subtitle: Text(task.subTitle.toString()),
                       trailing: Checkbox(
                           activeColor: MyColor.lightBluColor,
-                          value: controller.tasks[index].status,
+                          value: task.status,
                           onChanged: (value) {
-                            isChecked = !isChecked;
-                            setState(() {});
+                            task.status = !task.status!;
+                            Get.find<TaskController>().tasks[index] = task;
                           },
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(3)),
@@ -145,9 +151,81 @@ class _BottomSectionWidgetState extends State<BottomSectionWidget> {
                       height: .5,
                     );
                   },
-                  itemCount: controller.tasks.length);
+                  itemCount: Get.find<TaskController>().tasks.length);
             },
           )),
     );
   }
 }
+
+
+// class BottomSectionWidget extends StatefulWidget {
+//   const BottomSectionWidget({
+//     super.key,
+//   });
+
+//   @override
+//   State<BottomSectionWidget> createState() => _BottomSectionWidgetState();
+// }
+
+// class _BottomSectionWidgetState extends State<BottomSectionWidget> {
+
+
+//   @override
+//   Widget build(BuildContext context) {
+//     var controller = Get.find<TaskController>();
+//     return Align(
+//       alignment: Alignment.bottomCenter,
+//       child: Container(
+//           height: Get.height * .55,
+//           width: Get.width,
+//           decoration: BoxDecoration(
+//               color: Colors.white,
+//               borderRadius: BorderRadius.only(
+//                   topLeft: Radius.circular(24), topRight: Radius.circular(24))),
+//           child: Obx(
+//             () {
+//               return ListView.separated(
+//                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+//                   itemBuilder: (context, index) {
+//                     return ListTile(
+//                       onLongPress: () {
+//                         controller.tasks.removeAt(index);
+//                       },
+//                       onTap: () {
+//                         Get.find<TaskController>().index = index;
+//                         Get.find<TaskController>().isEditing = true;
+//                         Get.find<NewTaskController>().titleController.text =
+//                             controller.tasks[index].taskTitle!;
+//                         Get.find<NewTaskController>().subtitleController.text =
+//                             controller.tasks[index].subTitle!;
+//                         Get.toNamed("/newTask");
+//                       },
+//                       title: Text(controller.tasks[index].taskTitle.toString()),
+//                       subtitle:
+//                           Text(controller.tasks[index].subTitle.toString()),
+//                       trailing: Checkbox(
+//                           activeColor: MyColor.lightBluColor,
+//                           value: controller.tasks[index].status,
+//                           onChanged: (value) {
+//                             controller.tasks[index].status =
+//                                 !controller.tasks[index].status!;
+                          
+//                             setState(() {});
+//                           },
+//                           shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(3)),
+//                           side: BorderSide(color: Colors.black45, width: 1)),
+//                     );
+//                   },
+//                   separatorBuilder: (context, index) {
+//                     return Divider(
+//                       height: .5,
+//                     );
+//                   },
+//                   itemCount: controller.tasks.length);
+//             },
+//           )),
+//     );
+//   }
+// }

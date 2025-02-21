@@ -12,7 +12,8 @@ class NewTaskWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("New Task"),
+        title: Text(
+            Get.find<TaskController>().isEditing ? "Edit Task" : "New Task"),
         centerTitle: true,
         leading: SizedBox(),
         actions: [
@@ -62,20 +63,43 @@ class NewTaskWidget extends StatelessWidget {
                           foregroundColor: Colors.white,
                           backgroundColor: MyColor.lightBluColor),
                       onPressed: () {
-                        Get.find<TaskController>().tasks.add(TaskModel(
-                            taskTitle: Get.find<NewTaskController>()
-                                .titleController
-                                .text,
-                            subTitle: Get.find<NewTaskController>()
-                                .subtitleController
-                                .text,
-                            status: true));
-                        Get.find<NewTaskController>().titleController.text = "";
-                        Get.find<NewTaskController>().subtitleController.text =
-                            "";
+                        if (Get.find<TaskController>().isEditing) {
+                          var task = Get.find<TaskController>()
+                              .tasks[Get.find<TaskController>().index];
+                          task.taskTitle = Get.find<NewTaskController>()
+                              .titleController
+                              .text;
+                          task.subTitle = Get.find<NewTaskController>()
+                              .subtitleController
+                              .text;
+                          Get.find<TaskController>()
+                              .tasks[Get.find<TaskController>().index] = task;
+                          Get.find<NewTaskController>().titleController.text =
+                              "";
+                          Get.find<NewTaskController>()
+                              .subtitleController
+                              .text = "";
+                        } else {
+                          Get.find<TaskController>().tasks.add(TaskModel(
+                              taskTitle: Get.find<NewTaskController>()
+                                  .titleController
+                                  .text,
+                              subTitle: Get.find<NewTaskController>()
+                                  .subtitleController
+                                  .text,
+                              status: false));
+                          Get.find<NewTaskController>().titleController.text =
+                              "";
+                          Get.find<NewTaskController>()
+                              .subtitleController
+                              .text = "";
+                        }
+
                         Get.back();
                       },
-                      child: Text("Add")))
+                      child: Text(Get.find<TaskController>().isEditing
+                          ? "Edit"
+                          : "Add")))
             ],
           ),
         ),
