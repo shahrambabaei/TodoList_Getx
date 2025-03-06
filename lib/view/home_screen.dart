@@ -3,12 +3,14 @@ import 'package:get/get.dart';
 import 'package:todolist_getx/constant.dart';
 import 'package:todolist_getx/controllers/newtask_controller.dart';
 import 'package:todolist_getx/controllers/task_controller.dart';
+import 'package:get_storage/get_storage.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+     final box = GetStorage();
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColor.lightBluColor,
@@ -136,11 +138,12 @@ class BottomSectionWidget extends StatelessWidget {
                       subtitle: Text(task.subTitle.toString()),
                       trailing: Checkbox(
                           activeColor: MyColor.lightBluColor,
-                          value: task.status,
                           onChanged: (value) {
                             task.status = !task.status!;
                             Get.find<TaskController>().tasks[index] = task;
                           },
+                          value: task.
+                          status,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(3)),
                           side: BorderSide(color: Colors.black45, width: 1)),
